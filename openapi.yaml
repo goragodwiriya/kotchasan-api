@@ -1,0 +1,470 @@
+openapi: 3.0.3
+info:
+  title: Kotchasan API
+  version: 1.0.0
+  description: |
+    Official API contract generated from current implementation.
+    Base routing pattern: /api/{module}/{method}/{action}
+servers:
+  - url: http://localhost/kotchasan_api
+    description: Local
+
+tags:
+  - name: Auth
+  - name: System
+
+paths:
+  /api/index/auth/csrf-token:
+    get:
+      tags: [Auth]
+      summary: Get CSRF token
+      operationId: getCsrfToken
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+
+  /api/index/auth/settings:
+    get:
+      tags: [Auth]
+      summary: Get auth feature settings
+      operationId: getAuthSettings
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+
+  /api/index/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      operationId: login
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                intended_url:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+        '401':
+          $ref: '#/components/responses/ErrorEnvelope'
+        '422':
+          $ref: '#/components/responses/ValidationErrorEnvelope'
+
+  /api/index/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout
+      operationId: logout
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+        '403':
+          $ref: '#/components/responses/ErrorEnvelope'
+        '405':
+          $ref: '#/components/responses/ErrorEnvelope'
+
+  /api/index/auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token (rotation enabled)
+      operationId: refreshToken
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: false
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+        '400':
+          $ref: '#/components/responses/ErrorEnvelope'
+        '401':
+          $ref: '#/components/responses/ErrorEnvelope'
+
+  /api/index/auth/verify:
+    get:
+      tags: [Auth]
+      summary: Verify access token
+      operationId: verifyToken
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+        '401':
+          $ref: '#/components/responses/ErrorEnvelope'
+
+  /api/index/auth/me:
+    get:
+      tags: [Auth]
+      summary: Current user profile
+      operationId: getMe
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+        '401':
+          $ref: '#/components/responses/ErrorEnvelope'
+
+  /api/index/auth/update:
+    post:
+      tags: [Auth]
+      summary: Update profile
+      operationId: updateProfile
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                repassword:
+                  type: string
+                  format: password
+                phone:
+                  type: string
+                sex:
+                  type: string
+                provinceID:
+                  type: integer
+                address:
+                  type: string
+                address2:
+                  type: string
+                zipcode:
+                  type: string
+                birthday:
+                  type: string
+                  format: date
+                website:
+                  type: string
+                  format: uri
+                company:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+        '401':
+          $ref: '#/components/responses/ErrorEnvelope'
+        '422':
+          $ref: '#/components/responses/ValidationErrorEnvelope'
+
+  /api/index/auth/forgot:
+    post:
+      tags: [Auth]
+      summary: Request password reset
+      operationId: forgotPassword
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [username]
+              properties:
+                username:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+        '422':
+          $ref: '#/components/responses/ValidationErrorEnvelope'
+        '429':
+          $ref: '#/components/responses/ErrorEnvelope'
+
+  /api/index/auth/resetpassword:
+    post:
+      tags: [Auth]
+      summary: Reset password
+      operationId: resetPassword
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [token, uid, password, repassword]
+              properties:
+                token:
+                  type: string
+                uid:
+                  type: integer
+                password:
+                  type: string
+                  format: password
+                repassword:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+        '400':
+          $ref: '#/components/responses/ErrorEnvelope'
+        '422':
+          $ref: '#/components/responses/ValidationErrorEnvelope'
+
+  /api/index/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register user
+      operationId: register
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [username, name, password, repassword]
+              properties:
+                username:
+                  type: string
+                name:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                repassword:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+        '403':
+          $ref: '#/components/responses/ErrorEnvelope'
+        '422':
+          $ref: '#/components/responses/ValidationErrorEnvelope'
+        '429':
+          $ref: '#/components/responses/ErrorEnvelope'
+
+  /api/index/auth/activate:
+    get:
+      tags: [Auth]
+      summary: Activate account
+      operationId: activateUser
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+        '400':
+          $ref: '#/components/responses/ErrorEnvelope'
+
+  /api/index/system/health:
+    get:
+      tags: [System]
+      summary: Liveness probe
+      operationId: health
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+
+  /api/index/system/readiness:
+    get:
+      tags: [System]
+      summary: Readiness probe
+      operationId: readiness
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+        '503':
+          $ref: '#/components/responses/ErrorEnvelope'
+
+  /api/index/system/version:
+    get:
+      tags: [System]
+      summary: Service version
+      operationId: getVersion
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+
+  /api/index/system/time:
+    get:
+      tags: [System]
+      summary: Service time
+      operationId: getTime
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+
+  /api/index/system/features:
+    get:
+      tags: [System]
+      summary: Feature flags
+      operationId: getFeatures
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessEnvelope'
+
+components:
+  parameters:
+    XCsrfToken:
+      in: header
+      name: X-CSRF-TOKEN
+      required: true
+      schema:
+        type: string
+        pattern: '^[a-f0-9]{64}$'
+    Page:
+      in: query
+      name: page
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: Standard page index for list endpoints.
+    PerPage:
+      in: query
+      name: per_page
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 20
+      description: Standard page size for list endpoints.
+    Sort:
+      in: query
+      name: sort
+      required: false
+      schema:
+        type: string
+      description: Sort field name.
+    Order:
+      in: query
+      name: order
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+      description: Sort direction.
+    Filter:
+      in: query
+      name: filter
+      required: false
+      schema:
+        type: object
+        additionalProperties: true
+      style: deepObject
+      explode: true
+      description: Standard filter object (deepObject style).
+
+  responses:
+    SuccessEnvelope:
+      description: Standard successful response
+      headers:
+        X-Request-Id:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponseSuccess'
+    ErrorEnvelope:
+      description: Standard error response
+      headers:
+        X-Request-Id:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponseError'
+    ValidationErrorEnvelope:
+      description: Validation error response
+      headers:
+        X-Request-Id:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiResponseError'
+              - type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 422
+
+  schemas:
+    ApiResponseSuccess:
+      type: object
+      required: [success, code, message, data, errors, request_id]
+      properties:
+        success:
+          type: boolean
+          example: true
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Success
+        data:
+          nullable: true
+        errors:
+          nullable: true
+          example: null
+        request_id:
+          type: string
+          example: c3f8a8d19a2e4f31
+
+    ApiResponseError:
+      type: object
+      required: [success, code, message, data, errors, request_id]
+      properties:
+        success:
+          type: boolean
+          example: false
+        code:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: Error
+        data:
+          nullable: true
+          example: null
+        errors:
+          nullable: true
+        request_id:
+          type: string
+          example: c3f8a8d19a2e4f31

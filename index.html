@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kotchasan API Framework</title>
+    <meta name="description" content="API Framework ที่ปลอดภัยและยืดหยุ่น สร้างบน Kotchasan PHP Framework พร้อม JWT, CSRF, Rate Limiting และ OpenAPI รองรับทันที" />
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
+            --accent: #7c3aed;
+            --accent-light: #ede9fe;
+            --success: #16a34a;
+            --success-light: #dcfce7;
+            --warning: #d97706;
+            --warning-light: #fef3c7;
+            --danger: #dc2626;
+            --danger-light: #fee2e2;
+            --info: #0891b2;
+            --info-light: #cffafe;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --radius-sm: 6px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, .07);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, .12);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Noto Sans Thai', sans-serif;
+            color: var(--text);
+            background: var(--gray-50);
+            line-height: 1.7;
+        }
+
+        /* ─── NAVBAR ─── */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, .92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+
+        .nav-logo {
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            text-decoration: none;
+        }
+
+        .nav-logo svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--gray-600);
+            font-size: .92rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color .2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-badge {
+            background: var(--primary);
+            color: #fff;
+            padding: .25rem .75rem;
+            border-radius: 999px;
+            font-size: .8rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* ─── HERO ─── */
+        .hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
+            color: #fff;
+            padding: 6rem 2rem 5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1' fill='rgba(255,255,255,.06)'/%3E%3C/svg%3E");
+            animation: bgmove 20s linear infinite;
+        }
+
+        @keyframes bgmove {
+            from {
+                background-position: 0 0;
+            }
+
+            to {
+                background-position: 60px 60px;
+            }
+        }
+
+        .hero-inner {
+            position: relative;
+            max-width: 760px;
+            margin: auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .2);
+            color: #a5b4fc;
+            padding: .35rem 1rem;
+            border-radius: 999px;
+            font-size: .8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+            letter-spacing: -.02em;
+        }
+
+        .hero h1 span {
+            color: #818cf8;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: #cbd5e1;
+            max-width: 580px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .75rem 1.75rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: .95rem;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all .2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, .4);
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, .08);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, .25);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, .15);
+            transform: translateY(-1px);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 2.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 3.5rem;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, .1);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: .82rem;
+            color: #94a3b8;
+            margin-top: .25rem;
+        }
+
+        /* ─── SECTIONS ─── */
+        section {
+            padding: 5rem 2rem;
+        }
+
+        .section-inner {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .section-title {
+            font-size: 1.85rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: .5rem;
+            color: var(--gray-900);
+        }
+
+        .section-sub {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 3rem;
+            max-width: 560px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ─── FEATURES ─── */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.75rem;
+            transition: all .25s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: .4rem;
+        }
+
+        .feature-desc {
+            color: var(--text-muted);
+            font-size: .9rem;
+        }
+
+        /* ─── ENDPOINTS ─── */
+        .tablebody {
+            overflow-x: auto;
+        }
+
+        #endpoints {
+            background: #fff;
+        }
+
+        .endpoint-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .88rem;
+        }
+
+        .endpoint-table th {
+            background: var(--gray-800);
+            color: #fff;
+            padding: .75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .endpoint-table th:first-child {
+            border-radius: var(--radius-sm) 0 0 0;
+        }
+
+        .endpoint-table th:last-child {
+            border-radius: 0 var(--radius-sm) 0 0;
+        }
+
+        .endpoint-table td {
+            padding: .75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .endpoint-table tr:hover td {
+            background: var(--gray-50);
+        }
+
+        .method {
+            display: inline-block;
+            padding: .2rem .55rem;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: .75rem;
+            font-family: monospace;
+            min-width: 52px;
+            text-align: center;
+        }
+
+        .get {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .post {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .put {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .delete {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .path {
+            font-family: monospace;
+            color: var(--gray-800);
+            font-size: .85rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: .15rem .5rem;
+            border-radius: 999px;
+            font-size: .75rem;
+            font-weight: 600;
+        }
+
+        .s200 {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .s401 {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        /* ─── QUICKSTART ─── */
+        #quickstart {
+            background: var(--gray-900);
+            color: #f1f5f9;
+        }
+
+        #quickstart .section-title {
+            color: #f8fafc;
+        }
+
+        #quickstart .section-sub {
+            color: #94a3b8;
+        }
+
+        .steps {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .step {
+            display: grid;
+            grid-template-columns: 40px 1fr;
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        .step-num {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .step .step-num+div {
+            overflow-x: auto;
+        }
+
+        .step-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: .5rem;
+            color: #f8fafc;
+        }
+
+        pre {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: var(--radius);
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            font-size: .84rem;
+            line-height: 1.6;
+            margin-top: .75rem;
+        }
+
+        code {
+            font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace;
+        }
+
+        .cmt {
+            color: #8b949e;
+        }
+
+        .kw {
+            color: #ff7b72;
+        }
+
+        .str {
+            color: #a5d6ff;
+        }
+
+        .var {
+            color: #ffa657;
+        }
+
+        .fn {
+            color: #d2a8ff;
+        }
+
+        .num {
+            color: #79c0ff;
+        }
+
+        .ph {
+            color: #7ee787;
+        }
+
+        /* ─── TESTING ─── */
+        #testing {
+            background: #fff;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(520px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .test-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .test-header {
+            background: var(--gray-800);
+            color: #fff;
+            padding: .75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .test-header-title {
+            font-weight: 600;
+            font-size: .9rem;
+        }
+
+        .test-body {
+            padding: 0;
+        }
+
+        .test-body pre {
+            border-radius: 0;
+            border: none;
+            margin: 0;
+        }
+
+        /* ─── RESPONSE ─── */
+        .response-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .resp-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .resp-header {
+            padding: .75rem 1.25rem;
+            font-weight: 700;
+            font-size: .9rem;
+        }
+
+        .resp-success {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .resp-error {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .resp-body pre {
+            border-radius: 0;
+            border: none;
+            margin: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        /* ─── ARCHITECTURE ─── */
+        #arch {
+            background: var(--gray-50);
+        }
+
+        .arch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .arch-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .arch-icon {
+            font-size: 2rem;
+            margin-bottom: .75rem;
+        }
+
+        .arch-title {
+            font-weight: 700;
+            margin-bottom: .4rem;
+        }
+
+        .arch-desc {
+            font-size: .85rem;
+            color: var(--text-muted);
+        }
+
+        .arch-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        /* ─── SECURITY ─── */
+        #security {
+            background: #fff;
+        }
+
+        .security-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+
+        .security-item {
+            display: flex;
+            gap: .75rem;
+            align-items: flex-start;
+            background: var(--gray-50);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+        }
+
+        .security-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .security-title {
+            font-weight: 700;
+            font-size: .95rem;
+            margin-bottom: .25rem;
+        }
+
+        .security-desc {
+            font-size: .85rem;
+            color: var(--text-muted);
+        }
+
+        /* ─── FOOTER ─── */
+        footer {
+            background: var(--gray-900);
+            color: #94a3b8;
+            text-align: center;
+            padding: 2.5rem 2rem;
+            font-size: .88rem;
+        }
+
+        footer a {
+            color: #818cf8;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: #a5b4fc;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .response-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-stats {
+                gap: 1.5rem;
+            }
+
+            .arch-arrow {
+                display: none;
+            }
+        }
+
+        /* ─── TABS ─── */
+        .tabs {
+            display: flex;
+            gap: .5rem;
+            margin-bottom: 0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: .5rem 1rem;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            background: var(--gray-200);
+            color: var(--gray-600);
+            cursor: pointer;
+            font-size: .85rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            transition: all .2s;
+        }
+
+        .tab.active {
+            background: #0d1117;
+            color: #f8fafc;
+            border-color: #30363d;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ─── PILL LABELS ─── */
+        .pill {
+            display: inline-block;
+            padding: .15rem .6rem;
+            border-radius: 999px;
+            font-size: .75rem;
+            font-weight: 600;
+        }
+
+        .pill-blue {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .pill-purple {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .pill-green {
+            background: var(--success-light);
+            color: var(--success);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ─── NAVBAR ─── -->
+    <nav>
+        <div class="nav-inner">
+            <a class="nav-logo" href="#">
+                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="8" fill="#2563eb" />
+                    <path d="M8 10h4v12H8V10zm6 0h4l4 6-4 6h-4l4-6-4-6z" fill="#fff" />
+                </svg> Kotchasan API </a>
+            <ul class="nav-links">
+                <li><a href="#features">คุณสมบัติ</a></li>
+                <li><a href="#endpoints">Endpoints</a></li>
+                <li><a href="#quickstart">เริ่มต้นใช้งาน</a></li>
+                <li><a href="#testing">ทดสอบ API</a></li>
+                <li><a href="#database">Database</a></li>
+                <li><a href="#security">ความปลอดภัย</a></li>
+            </ul>
+            <a class="nav-badge" href="openapi.yaml">OpenAPI Spec</a>
+        </div>
+    </nav>
+    <!-- ─── HERO ─── -->
+    <header class="hero">
+        <div class="hero-inner">
+            <div class="hero-badge">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                    <circle cx="6" cy="6" r="6" />
+                </svg> v1.0.0 &nbsp;·&nbsp; PHP 7.4+
+            </div>
+            <h1> API Framework<br />
+                <span>ที่สร้างบน Kotchasan</span>
+            </h1>
+            <p> RESTful API พร้อมใช้งาน พร้อม JWT Authentication, CSRF Protection, Rate Limiting และ OpenAPI Specification ในภาษา PHP </p>
+            <div class="hero-actions">
+                <a href="#quickstart" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg> เริ่มต้นใช้งาน </a>
+                <a href="https://docs.kotchasan.com/th/" class="btn btn-outline" target="_blank" rel="noopener">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg> คู่มือ (ไทย) </a>
+                <a href="https://docs.kotchasan.com/en/" class="btn btn-outline" target="_blank" rel="noopener">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg> Docs (EN) </a>
+                <a href="openapi.yaml" class="btn btn-outline">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="16" />
+                        <line x1="8" y1="12" x2="16" y2="12" />
+                    </svg> OpenAPI Spec </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-num">17</div>
+                    <div class="stat-label">API Endpoints</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num">4</div>
+                    <div class="stat-label">Security Layers</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num">4</div>
+                    <div class="stat-label">Database Drivers</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num">100%</div>
+                    <div class="stat-label">Tested</div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- ─── FEATURES ─── -->
+    <section id="features">
+        <div class="section-inner">
+            <h2 class="section-title">คุณสมบัติหลัก</h2>
+            <p class="section-sub">ทุกสิ่งที่ต้องการสำหรับการพัฒนา API ระดับ Production</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:var(--primary-light)">🔐</div>
+                    <div class="feature-title">JWT Authentication</div>
+                    <div class="feature-desc">ระบบยืนยันตัวตนด้วย JSON Web Token พร้อม refresh token rotation และ revoke list เพื่อความปลอดภัยสูงสุด</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:var(--accent-light)">🛡️</div>
+                    <div class="feature-title">CSRF Protection</div>
+                    <div class="feature-desc">ป้องกัน Cross-Site Request Forgery ทุก POST endpoint ต้องส่ง X-CSRF-TOKEN header ที่ได้จาก /auth/csrf-token</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:var(--success-light)">⚡</div>
+                    <div class="feature-title">Router อัตโนมัติ</div>
+                    <div class="feature-desc">ระบบ routing อัตโนมัติผ่านรูปแบบ /api/{module}/{method}/{action} ไม่ต้องกำหนด route ทีละเส้น</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:var(--warning-light)">🗄️</div>
+                    <div class="feature-title">Multi-Database</div>
+                    <div class="feature-desc">รองรับ MySQL, PostgreSQL, MSSQL และ SQLite ผ่าน Query Builder ที่ใช้งานง่าย ป้องกัน SQL Injection ในตัว</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:var(--info-light)">📋</div>
+                    <div class="feature-title">Standard Response</div>
+                    <div class="feature-desc">ทุก endpoint คืนค่า JSON Envelope มาตรฐาน: success, code, message, data, errors, request_id</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:#fce7f3)">🚦</div>
+                    <div class="feature-title">Rate Limiting</div>
+                    <div class="feature-desc">จำกัดจำนวน request ต่อ IP เพื่อป้องกัน brute force และ DDoS พร้อมกำหนดค่าได้ตามต้องการ</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:var(--success-light)">❤️</div>
+                    <div class="feature-title">Health Check</div>
+                    <div class="feature-desc">Endpoint /system/health, /system/readiness และ /system/version สำหรับ monitoring และ DevOps pipeline</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:var(--primary-light)">📄</div>
+                    <div class="feature-title">OpenAPI 3.0</div>
+                    <div class="feature-desc">สเปกครบถ้วนในไฟล์ openapi.yaml สามารถ generate SDK อัตโนมัติสำหรับ TypeScript, Python และอื่นๆ</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:var(--accent-light)">🔔</div>
+                    <div class="feature-title">Multi-Channel Notify</div>
+                    <div class="feature-desc">ส่งการแจ้งเตือนผ่าน Email, Telegram, LINE, SMS รองรับเทมเพลตอีเมล HTML ในตัว</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ─── ARCHITECTURE ─── -->
+    <section id="arch">
+        <div class="section-inner">
+            <h2 class="section-title">สถาปัตยกรรม</h2>
+            <p class="section-sub">MVC pattern ที่ชัดเจน แต่ละชั้นแยกหน้าที่กันอย่างสะอาด</p>
+            <div class="arch-grid">
+                <div class="arch-card">
+                    <div class="arch-icon">🌐</div>
+                    <div class="arch-title">HTTP Request</div>
+                    <div class="arch-desc">Client ส่ง request เข้า api.php</div>
+                </div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-card">
+                    <div class="arch-icon">🔀</div>
+                    <div class="arch-title">Router</div>
+                    <div class="arch-desc">แปลง URL → module/method/action</div>
+                </div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-card">
+                    <div class="arch-icon">🛡️</div>
+                    <div class="arch-title">Middleware</div>
+                    <div class="arch-desc">ตรวจ JWT, CSRF, Rate Limit, CORS</div>
+                </div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-card">
+                    <div class="arch-icon">⚙️</div>
+                    <div class="arch-title">Controller</div>
+                    <div class="arch-desc">รับ Request เรียก Model ส่ง Response</div>
+                </div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-card">
+                    <div class="arch-icon">🗄️</div>
+                    <div class="arch-title">Model / DB</div>
+                    <div class="arch-desc">Query Builder เชื่อมต่อฐานข้อมูล</div>
+                </div>
+            </div>
+            <pre style="margin-top:2rem"><code><span class="cmt"># URL Pattern</span>
+<span class="str">http://localhost/kotchasan-api/api/{module}/{method}/{action}</span>
+
+<span class="cmt"># ตัวอย่าง</span>
+<span class="str">GET  /api/index/auth/csrf-token</span>   <span class="cmt">→ Index\Auth\Controller::csrf_token()</span>
+<span class="str">POST /api/index/auth/login</span>        <span class="cmt">→ Index\Auth\Controller::login()</span>
+<span class="str">GET  /api/index/system/health</span>     <span class="cmt">→ Index\System\Controller::health()</span>
+<span class="str">POST /api/mymodule/user/create</span>    <span class="cmt">→ Mymodule\User\Controller::create()</span></code></pre>
+        </div>
+    </section>
+    <!-- ─── ENDPOINTS ─── -->
+    <section id="endpoints">
+        <div class="section-inner">
+            <h2 class="section-title">API Endpoints</h2>
+            <p class="section-sub">Endpoints ทั้งหมดที่พร้อมใช้งาน ทดสอบแล้วบน localhost</p>
+            <div class="tablebody">
+                <table class="endpoint-table">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Endpoint</th>
+                            <th>หน้าที่</th>
+                            <th>Auth</th>
+                            <th>CSRF</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td class="path">/api/index/auth/csrf-token</td>
+                            <td>ออก CSRF token สำหรับ POST request</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td class="path">/api/index/auth/settings</td>
+                            <td>อ่าน feature flags (register, forgot, activate)</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td class="path">/api/index/auth/verify</td>
+                            <td>ตรวจสอบ access token ปัจจุบัน</td>
+                            <td>✅</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td class="path">/api/index/auth/me</td>
+                            <td>ดึงข้อมูลผู้ใช้ปัจจุบัน</td>
+                            <td>✅</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td class="path">/api/index/auth/activate?id={code}</td>
+                            <td>ยืนยันบัญชีด้วย activation code</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td class="path">/api/index/auth/login</td>
+                            <td>เข้าสู่ระบบ → คืน access + refresh token</td>
+                            <td>-</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td class="path">/api/index/auth/logout</td>
+                            <td>ออกจากระบบ revoke token ปัจจุบัน</td>
+                            <td>-</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td class="path">/api/index/auth/refresh</td>
+                            <td>ต่ออายุ access token ด้วย refresh token</td>
+                            <td>-</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td class="path">/api/index/auth/register</td>
+                            <td>สมัครสมาชิกใหม่</td>
+                            <td>-</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td class="path">/api/index/auth/update</td>
+                            <td>อัปเดตโปรไฟล์ผู้ใช้ปัจจุบัน</td>
+                            <td>✅</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td class="path">/api/index/auth/forgot</td>
+                            <td>ขอรีเซ็ตรหัสผ่าน → ส่งอีเมล</td>
+                            <td>-</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td class="path">/api/index/auth/resetpassword</td>
+                            <td>รีเซ็ตรหัสผ่านด้วย token จากอีเมล</td>
+                            <td>-</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr style="background:var(--gray-50)">
+                            <td><span class="method get">GET</span></td>
+                            <td class="path">/api/index/system/health</td>
+                            <td>Liveness probe — ระบบยังทำงานอยู่</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td class="path">/api/index/system/readiness</td>
+                            <td>Readiness probe — config/storage/database</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td class="path">/api/index/system/version</td>
+                            <td>เวอร์ชันระบบปัจจุบัน</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td class="path">/api/index/system/time</td>
+                            <td>เวลาเซิร์ฟเวอร์ (timezone: Asia/Bangkok)</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td class="path">/api/index/system/features</td>
+                            <td>Feature flags ทั้งหมดของระบบ</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="margin-top:1rem;font-size:.85rem;color:var(--text-muted)"> ✅ Auth = ต้องใส่ Bearer token ใน Authorization header &nbsp;|&nbsp; ✅ CSRF = ต้องส่ง X-CSRF-TOKEN
+                header </p>
+        </div>
+    </section>
+    <!-- ─── QUICKSTART ─── -->
+    <section id="quickstart">
+        <div class="section-inner">
+            <h2 class="section-title" style="color:#f8fafc">เริ่มต้นใช้งานใน 5 ขั้นตอน</h2>
+            <p class="section-sub">ตั้งค่าและเรียก API ได้ภายใน 5 นาที</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div>
+                        <div class="step-title">Clone และติดตั้ง</div>
+                        <pre><code><span class="cmt"># Clone โปรเจกต์</span>
+<span class="ph">git clone</span> <span class="str">https://github.com/goragodwiriya/kotchasan-api.git</span>
+<span class="ph">cd</span> kotchasan-api
+
+<span class="cmt"># ตั้งค่า Virtual Host ให้ชี้มาที่โฟลเดอร์นี้</span>
+<span class="cmt"># หรือเข้าผ่าน http://localhost/kotchasan-api/</span></code></pre>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div>
+                        <div class="step-title">กำหนดค่าใน settings/config.php</div>
+                        <pre><code><span class="cmt"># settings/config.php</span>
+<span class="kw">return</span> [
+    <span class="str">'version'</span>    => <span class="str">'1.0.0'</span>,
+    <span class="str">'timezone'</span>   => <span class="str">'Asia/Bangkok'</span>,
+    <span class="str">'jwt_secret'</span> => <span class="str">'your-strong-secret-key-here'</span>,
+    <span class="str">'api_tokens'</span> => [
+        <span class="str">'internal'</span> => <span class="str">'your-internal-token'</span>,
+        <span class="str">'external'</span> => <span class="str">'your-external-token'</span>,
+    ],
+    <span class="str">'api_ips'</span>    => [<span class="str">'0.0.0.0'</span>], <span class="cmt">// 0.0.0.0 = ทุก IP</span>
+    <span class="str">'api_cors'</span>   => <span class="str">'*'</span>,
+    <span class="str">'user_register'</span> => <span class="num">1</span>,
+    <span class="str">'user_forgot'</span>   => <span class="num">1</span>,
+];</code></pre>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div>
+                        <div class="step-title">กำหนดฐานข้อมูลใน settings/database.php</div>
+                        <pre><code><span class="cmt"># settings/database.php</span>
+<span class="kw">return</span> [
+    <span class="str">'default'</span> => [
+        <span class="str">'dbdriver'</span> => <span class="str">'mysql'</span>,
+        <span class="str">'dbhost'</span>   => <span class="str">'localhost'</span>,
+        <span class="str">'dbname'</span>   => <span class="str">'my_database'</span>,
+        <span class="str">'username'</span> => <span class="str">'root'</span>,
+        <span class="str">'password'</span> => <span class="str">''</span>,
+        <span class="str">'dbcharset'</span> => <span class="str">'utf8mb4'</span>,
+        <span class="str">'prefix'</span>   => <span class="str">''</span>,
+    ]
+];</code></pre>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div>
+                        <div class="step-title">ตรวจสอบระบบด้วย Health Check</div>
+                        <pre><code><span class="cmt"># ทดสอบ liveness</span>
+<span class="ph">curl</span> http://localhost/kotchasan-api/api/index/system/health
+
+<span class="cmt"># ผลลัพธ์ที่คาดหวัง</span>
+{
+  <span class="str">"success"</span>: <span class="kw">true</span>,
+  <span class="str">"code"</span>: <span class="num">200</span>,
+  <span class="str">"message"</span>: <span class="str">"OK"</span>,
+  <span class="str">"data"</span>: { <span class="str">"status"</span>: <span class="str">"healthy"</span> }
+}</code></pre>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">5</div>
+                    <div>
+                        <div class="step-title">เรียก Login Flow ครั้งแรก</div>
+                        <pre><code><span class="cmt"># 1. ขอ CSRF token</span>
+<span class="ph">CSRF</span>=$(curl -s -c /tmp/k.cookie -D - \
+  http://localhost/kotchasan-api/api/index/auth/csrf-token \
+  | grep -i '^X-Csrf-Token:' | awk '{print $2}' | tr -d '\r')
+
+<span class="cmt"># 2. Login</span>
+<span class="ph">curl</span> -s -b /tmp/k.cookie -c /tmp/k.cookie \
+  -H <span class="str">"X-CSRF-TOKEN: $CSRF"</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{"username":"admin","password":"your-password"}'</span> \
+  http://localhost/kotchasan-api/api/index/auth/login</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ─── RESPONSE FORMAT ─── -->
+    <section id="response" style="background:var(--gray-50)">
+        <div class="section-inner">
+            <h2 class="section-title">รูปแบบ Response มาตรฐาน</h2>
+            <p class="section-sub">ทุก endpoint คืนค่า JSON Envelope เดียวกันเสมอ ทำให้ client จัดการง่าย</p>
+            <div class="response-grid">
+                <div class="resp-card">
+                    <div class="resp-header resp-success">✅ Success Response</div>
+                    <div class="resp-body">
+                        <pre><code>{
+  <span class="str">"success"</span>: <span class="kw">true</span>,
+  <span class="str">"code"</span>: <span class="num">200</span>,
+  <span class="str">"message"</span>: <span class="str">"Login successful"</span>,
+  <span class="str">"data"</span>: {
+    <span class="str">"access_token"</span>: <span class="str">"eyJhbGciOiJIUzI1..."</span>,
+    <span class="str">"refresh_token"</span>: <span class="str">"eyJhbGciOiJIUzI1..."</span>,
+    <span class="str">"expires_in"</span>: <span class="num">3600</span>,
+    <span class="str">"user"</span>: {
+      <span class="str">"id"</span>: <span class="num">1</span>,
+      <span class="str">"username"</span>: <span class="str">"admin"</span>,
+      <span class="str">"email"</span>: <span class="str">"admin@example.com"</span>
+    }
+  },
+  <span class="str">"errors"</span>: <span class="kw">null</span>,
+  <span class="str">"request_id"</span>: <span class="str">"c20e2ed61d9b1abf"</span>
+}</code></pre>
+                    </div>
+                </div>
+                <div class="resp-card">
+                    <div class="resp-header resp-error">❌ Error Response</div>
+                    <div class="resp-body">
+                        <pre><code>{
+  <span class="str">"success"</span>: <span class="kw">false</span>,
+  <span class="str">"code"</span>: <span class="num">422</span>,
+  <span class="str">"message"</span>: <span class="str">"Validation failed"</span>,
+  <span class="str">"data"</span>: <span class="kw">null</span>,
+  <span class="str">"errors"</span>: {
+    <span class="str">"username"</span>: <span class="str">"กรุณากรอกชื่อผู้ใช้"</span>,
+    <span class="str">"password"</span>: <span class="str">"รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร"</span>
+  },
+  <span class="str">"request_id"</span>: <span class="str">"a1b2c3d4e5f6g7h8"</span>
+}
+
+<span class="cmt">// HTTP Status Codes ที่ใช้</span>
+<span class="num">200</span> OK          — สำเร็จ
+<span class="num">201</span> Created      — สร้างข้อมูลสำเร็จ
+<span class="num">400</span> Bad Request  — ข้อมูลไม่ถูกต้อง
+<span class="num">401</span> Unauthorized — ไม่มีสิทธิ์ / token หมดอายุ
+<span class="num">403</span> Forbidden    — ถูกปฏิเสธ (CSRF ไม่ถูกต้อง)
+<span class="num">404</span> Not Found    — ไม่พบ resource
+<span class="num">405</span> Method Not Allowed
+<span class="num">422</span> Unprocessable — Validation error
+<span class="num">429</span> Too Many Requests — Rate limit
+<span class="num">503</span> Service Unavailable</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ─── TESTING ─── -->
+    <section id="testing">
+        <div class="section-inner">
+            <h2 class="section-title">ตัวอย่างการทดสอบ API</h2>
+            <p class="section-sub">คำสั่ง curl พร้อมใช้งาน คัดลอกได้ทันที</p>
+            <div class="test-grid">
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-header-title">🔑 ขอ CSRF Token</span>
+                        <span class="method get">GET</span>
+                    </div>
+                    <div class="test-body">
+                        <pre><code><span class="cmt"># เก็บ cookie และดึง CSRF token จาก header</span>
+<span class="ph">curl</span> -s -c /tmp/k.cookie -D /tmp/k.headers \
+  http://localhost/kotchasan-api/api/index/auth/csrf-token
+
+<span class="cmt"># อ่าน token จาก response header</span>
+<span class="var">TOK</span>=$(grep -i <span class="str">'^X-Csrf-Token:'</span> /tmp/k.headers \
+  | awk <span class="str">'{print $2}'</span> | tr -d <span class="str">'\r'</span>)
+echo <span class="str">"CSRF Token: $TOK"</span></code></pre>
+                    </div>
+                </div>
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-header-title">🔐 Login</span>
+                        <span class="method post">POST</span>
+                    </div>
+                    <div class="test-body">
+                        <pre><code><span class="ph">curl</span> -s -b /tmp/k.cookie -c /tmp/k.cookie \
+  -H <span class="str">"X-CSRF-TOKEN: $TOK"</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{"username":"admin","password":"password123"}'</span> \
+  http://localhost/kotchasan-api/api/index/auth/login
+
+<span class="cmt"># เก็บ access token สำหรับคำสั่งถัดไป</span>
+<span class="var">ACCESS</span>=$(curl ... | python3 -c \
+  <span class="str">"import sys,json; print(json.load(sys.stdin)['data']['access_token'])"</span>)</code></pre>
+                    </div>
+                </div>
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-header-title">👤 ดึงข้อมูลโปรไฟล์ (me)</span>
+                        <span class="method get">GET</span>
+                    </div>
+                    <div class="test-body">
+                        <pre><code><span class="ph">curl</span> -s -b /tmp/k.cookie \
+  -H <span class="str">"Authorization: Bearer $ACCESS"</span> \
+  http://localhost/kotchasan-api/api/index/auth/me</code></pre>
+                    </div>
+                </div>
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-header-title">🔄 Refresh Token</span>
+                        <span class="method post">POST</span>
+                    </div>
+                    <div class="test-body">
+                        <pre><code><span class="ph">curl</span> -s -b /tmp/k.cookie -c /tmp/k.cookie \
+  -H <span class="str">"X-CSRF-TOKEN: $TOK"</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{"refresh_token":"eyJhbGciOiJIUzI1..."}'</span> \
+  http://localhost/kotchasan-api/api/index/auth/refresh</code></pre>
+                    </div>
+                </div>
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-header-title">📝 สมัครสมาชิก</span>
+                        <span class="method post">POST</span>
+                    </div>
+                    <div class="test-body">
+                        <pre><code><span class="ph">curl</span> -s -b /tmp/k.cookie -c /tmp/k.cookie \
+  -H <span class="str">"X-CSRF-TOKEN: $TOK"</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{
+    "username": "newuser",
+    "password": "SecurePass123",
+    "email": "user@example.com",
+    "name": "ชื่อผู้ใช้"
+  }'</span> \
+  http://localhost/kotchasan-api/api/index/auth/register</code></pre>
+                    </div>
+                </div>
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-header-title">❤️ Health Check</span>
+                        <span class="method get">GET</span>
+                    </div>
+                    <div class="test-body">
+                        <pre><code><span class="cmt"># Liveness probe</span>
+<span class="ph">curl</span> http://localhost/kotchasan-api/api/index/system/health
+
+<span class="cmt"># Readiness probe (ตรวจ DB/Storage)</span>
+<span class="ph">curl</span> http://localhost/kotchasan-api/api/index/system/readiness
+
+<span class="cmt"># เวอร์ชัน</span>
+<span class="ph">curl</span> http://localhost/kotchasan-api/api/index/system/version
+
+<span class="cmt"># เวลาเซิร์ฟเวอร์</span>
+<span class="ph">curl</span> http://localhost/kotchasan-api/api/index/system/time</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ─── DATABASE SCHEMA ─── -->
+    <section id="database" style="background:var(--gray-50)">
+        <div class="section-inner">
+            <h2 class="section-title">Database Schema</h2>
+            <p class="section-sub">SQL ที่ต้องสร้างก่อนใช้งาน API — รองรับ MySQL / MariaDB</p>
+            <div style="display:grid;gap:1.5rem">
+                <!-- user table -->
+                <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+                    <div style="background:var(--gray-800);color:#fff;padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between">
+                        <span style="font-weight:700;font-size:.95rem">📋 ตาราง <code
+                                  style="background:rgba(255,255,255,.12);padding:.1rem .4rem;border-radius:4px;font-size:.85rem">user</code></span>
+                        <span style="font-size:.8rem;color:#94a3b8">ใช้โดย: auth/login, auth/me, auth/register, auth/update, auth/forgot, auth/resetpassword, auth/verify,
+                            auth/activate</span>
+                    </div>
+                    <pre style="border-radius:0;border:none;margin:0"><code><span class="kw">CREATE TABLE</span> <span class="var">`user`</span> (
+  <span class="var">`id`</span>           <span class="fn">int</span>(<span class="num">11</span>)         <span class="kw">NOT NULL AUTO_INCREMENT</span>,
+  <span class="var">`username`</span>     <span class="fn">varchar</span>(<span class="num">100</span>)   <span class="kw">NOT NULL DEFAULT</span> <span class="str">''</span>   <span class="cmt">-- ใช้ login (รองรับ email)</span>,
+  <span class="var">`password`</span>     <span class="fn">varchar</span>(<span class="num">64</span>)    <span class="kw">NOT NULL DEFAULT</span> <span class="str">''</span>   <span class="cmt">-- SHA1 hash</span>,
+  <span class="var">`salt`</span>         <span class="fn">varchar</span>(<span class="num">32</span>)    <span class="kw">NOT NULL DEFAULT</span> <span class="str">''</span>   <span class="cmt">-- random salt สำหรับ hash</span>,
+  <span class="var">`name`</span>         <span class="fn">varchar</span>(<span class="num">200</span>)   <span class="kw">NOT NULL DEFAULT</span> <span class="str">''</span>   <span class="cmt">-- ชื่อแสดง</span>,
+  <span class="var">`phone`</span>        <span class="fn">varchar</span>(<span class="num">20</span>)    <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,
+  <span class="var">`id_card`</span>      <span class="fn">varchar</span>(<span class="num">20</span>)    <span class="kw">DEFAULT</span> <span class="kw">NULL</span>             <span class="cmt">-- เลขบัตรประชาชน (optional)</span>,
+  <span class="var">`telegram_id`</span>  <span class="fn">varchar</span>(<span class="num">100</span>)   <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,
+  <span class="var">`status`</span>       <span class="fn">tinyint</span>(<span class="num">1</span>)    <span class="kw">NOT NULL DEFAULT</span> <span class="num">0</span>    <span class="cmt">-- 0=user, 1=admin</span>,
+  <span class="var">`social`</span>       <span class="fn">varchar</span>(<span class="num">20</span>)    <span class="kw">NOT NULL DEFAULT</span> <span class="str">'user'</span> <span class="cmt">-- 'user' | 'google' | 'facebook'</span>,
+  <span class="var">`active`</span>       <span class="fn">tinyint</span>(<span class="num">1</span>)    <span class="kw">NOT NULL DEFAULT</span> <span class="num">1</span>    <span class="cmt">-- 1=active, 0=รอยืนยันอีเมล</span>,
+  <span class="var">`activatecode`</span> <span class="fn">varchar</span>(<span class="num">64</span>)    <span class="kw">NOT NULL DEFAULT</span> <span class="str">''</span>   <span class="cmt">-- email activation / password reset token</span>,
+  <span class="var">`permission`</span>   <span class="fn">text</span>           <span class="kw">DEFAULT</span> <span class="kw">NULL</span>             <span class="cmt">-- JSON permissions</span>,
+  <span class="var">`token`</span>        <span class="fn">varchar</span>(<span class="num">512</span>)   <span class="kw">DEFAULT</span> <span class="kw">NULL</span>             <span class="cmt">-- JWT access token ปัจจุบัน</span>,
+  <span class="var">`token_expires`</span> <span class="fn">datetime</span>      <span class="kw">DEFAULT</span> <span class="kw">NULL</span>             <span class="cmt">-- วันหมดอายุ access / reset token</span>,
+  <span class="var">`visited`</span>      <span class="fn">int</span>(<span class="num">11</span>)        <span class="kw">NOT NULL DEFAULT</span> <span class="num">0</span>    <span class="cmt">-- จำนวนครั้ง login</span>,
+  <span class="var">`created_at`</span>   <span class="fn">datetime</span>       <span class="kw">DEFAULT</span> <span class="kw">CURRENT_TIMESTAMP</span>,
+  <span class="kw">PRIMARY KEY</span> (<span class="var">`id`</span>),
+  <span class="kw">UNIQUE KEY</span> <span class="var">`username`</span> (<span class="var">`username`</span>),
+  <span class="kw">KEY</span> <span class="var">`active`</span> (<span class="var">`active`</span>),
+  <span class="kw">KEY</span> <span class="var">`status`</span> (<span class="var">`status`</span>)
+) <span class="kw">ENGINE</span>=InnoDB <span class="kw">DEFAULT CHARSET</span>=utf8mb4 <span class="kw">COLLATE</span>=utf8mb4_unicode_ci;</code></pre>
+                </div>
+                <!-- logs table -->
+                <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+                    <div style="background:var(--gray-800);color:#fff;padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between">
+                        <span style="font-weight:700;font-size:.95rem">📋 ตาราง <code
+                                  style="background:rgba(255,255,255,.12);padding:.1rem .4rem;border-radius:4px;font-size:.85rem">logs</code></span>
+                        <span style="font-size:.8rem;color:#94a3b8">ใช้โดย: auth/login, auth/logout, auth/register, auth/forgot, auth/resetpassword</span>
+                    </div>
+                    <pre style="border-radius:0;border:none;margin:0"><code><span class="kw">CREATE TABLE</span> <span class="var">`logs`</span> (
+  <span class="var">`id`</span>         <span class="fn">int</span>(<span class="num">11</span>)         <span class="kw">NOT NULL AUTO_INCREMENT</span>,
+  <span class="var">`src_id`</span>     <span class="fn">int</span>(<span class="num">11</span>)         <span class="kw">NOT NULL DEFAULT</span> <span class="num">0</span>    <span class="cmt">-- ID ของ resource ที่ถูกกระทำ (เช่น user.id)</span>,
+  <span class="var">`member_id`</span>  <span class="fn">int</span>(<span class="num">11</span>)         <span class="kw">NOT NULL DEFAULT</span> <span class="num">0</span>    <span class="cmt">-- ID ผู้กระทำ (0 = guest)</span>,
+  <span class="var">`module`</span>     <span class="fn">varchar</span>(<span class="num">50</span>)    <span class="kw">NOT NULL DEFAULT</span> <span class="str">''</span>   <span class="cmt">-- เช่น 'index'</span>,
+  <span class="var">`action`</span>     <span class="fn">varchar</span>(<span class="num">50</span>)    <span class="kw">NOT NULL DEFAULT</span> <span class="str">''</span>   <span class="cmt">-- เช่น 'login', 'register', 'logout'</span>,
+  <span class="var">`topic`</span>      <span class="fn">varchar</span>(<span class="num">255</span>)   <span class="kw">NOT NULL DEFAULT</span> <span class="str">''</span>   <span class="cmt">-- ข้อความสรุป</span>,
+  <span class="var">`reason`</span>     <span class="fn">varchar</span>(<span class="num">255</span>)   <span class="kw">DEFAULT</span> <span class="kw">NULL</span>             <span class="cmt">-- เหตุผล (เช่น กรณี reject)</span>,
+  <span class="var">`datas`</span>      <span class="fn">text</span>           <span class="kw">DEFAULT</span> <span class="kw">NULL</span>             <span class="cmt">-- JSON ข้อมูลเพิ่มเติม</span>,
+  <span class="var">`created_at`</span> <span class="fn">datetime</span>       <span class="kw">DEFAULT</span> <span class="kw">CURRENT_TIMESTAMP</span>,
+  <span class="kw">PRIMARY KEY</span> (<span class="var">`id`</span>),
+  <span class="kw">KEY</span> <span class="var">`member_id`</span> (<span class="var">`member_id`</span>),
+  <span class="kw">KEY</span> <span class="var">`module_action`</span> (<span class="var">`module`</span>, <span class="var">`action`</span>),
+  <span class="kw">KEY</span> <span class="var">`created_at`</span> (<span class="var">`created_at`</span>)
+) <span class="kw">ENGINE</span>=InnoDB <span class="kw">DEFAULT CHARSET</span>=utf8mb4 <span class="kw">COLLATE</span>=utf8mb4_unicode_ci;</code></pre>
+                </div>
+                <!-- column usage map -->
+                <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+                    <div style="background:var(--gray-800);color:#fff;padding:.75rem 1.25rem">
+                        <span style="font-weight:700;font-size:.95rem">🔗 Endpoint → Column ที่ใช้งาน</span>
+                    </div>
+                    <div class="tablebody">
+                        <table style="width:100%;border-collapse:collapse;font-size:.85rem">
+                            <thead>
+                                <tr style="background:var(--gray-100)">
+                                    <th style="padding:.65rem 1rem;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap">Endpoint</th>
+                                    <th style="padding:.65rem 1rem;text-align:left;border-bottom:1px solid var(--border)">READ columns</th>
+                                    <th style="padding:.65rem 1rem;text-align:left;border-bottom:1px solid var(--border)">WRITE columns</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom:1px solid var(--border)">
+                                    <td style="padding:.6rem 1rem;white-space:nowrap"><code>POST /auth/login</code></td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">username, password, salt, active, activatecode, status, permission</td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">token, token_expires, visited <span style="color:#94a3b8">· logs: action=login</span>
+                                    </td>
+                                </tr>
+                                <tr style="background:var(--gray-50);border-bottom:1px solid var(--border)">
+                                    <td style="padding:.6rem 1rem;white-space:nowrap"><code>GET /auth/me</code></td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">id, username, name, phone, status, permission, token, token_expires</td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">—</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid var(--border)">
+                                    <td style="padding:.6rem 1rem;white-space:nowrap"><code>GET /auth/verify</code></td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">id, token, token_expires, active</td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">—</td>
+                                </tr>
+                                <tr style="background:var(--gray-50);border-bottom:1px solid var(--border)">
+                                    <td style="padding:.6rem 1rem;white-space:nowrap"><code>POST /auth/register</code></td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">username (duplicate check)</td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">INSERT ทุก column <span style="color:#94a3b8">· logs: action=register</span></td>
+                                </tr>
+                                <tr style="border-bottom:1px solid var(--border)">
+                                    <td style="padding:.6rem 1rem;white-space:nowrap"><code>POST /auth/update</code></td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">id, token (auth check)</td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">name, phone, password, salt</td>
+                                </tr>
+                                <tr style="background:var(--gray-50);border-bottom:1px solid var(--border)">
+                                    <td style="padding:.6rem 1rem;white-space:nowrap"><code>POST /auth/logout</code></td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">—</td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">token=NULL, token_expires=NULL <span style="color:#94a3b8">· logs: action=logout</span>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom:1px solid var(--border)">
+                                    <td style="padding:.6rem 1rem;white-space:nowrap"><code>POST /auth/refresh</code></td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">id, active (via JWT payload)</td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">token, token_expires <span style="color:#94a3b8">· revoked_tokens.json</span></td>
+                                </tr>
+                                <tr style="background:var(--gray-50);border-bottom:1px solid var(--border)">
+                                    <td style="padding:.6rem 1rem;white-space:nowrap"><code>GET /auth/activate</code></td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">activatecode (WHERE)</td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">active=1, activatecode=''</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid var(--border)">
+                                    <td style="padding:.6rem 1rem;white-space:nowrap"><code>POST /auth/forgot</code></td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">username (find user)</td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">activatecode (hash), token_expires <span style="color:#94a3b8">· logs:
+                                            action=forgot</span></td>
+                                </tr>
+                                <tr style="background:var(--gray-50)">
+                                    <td style="padding:.6rem 1rem;white-space:nowrap"><code>POST /auth/resetpassword</code></td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">id, activatecode, token_expires</td>
+                                    <td style="padding:.6rem 1rem;color:var(--text-muted)">password, salt, activatecode='', token_expires=NULL <span style="color:#94a3b8">· logs:
+                                            action=reset</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- nav link for navbar -->
+            <p style="margin-top:1.5rem;font-size:.85rem;color:var(--text-muted)"> ไฟล์ cache ที่ใช้เสริม: <code>datas/cache/auth_sessions.json</code> (active sessions) และ
+                <code>datas/cache/revoked_tokens.json</code> (revoked refresh tokens) — ต้อง writable โดย web server </p>
+        </div>
+    </section>
+    <!-- ─── SECURITY ─── -->
+    <section id="security">
+        <div class="section-inner">
+            <h2 class="section-title">ความปลอดภัย</h2>
+            <p class="section-sub">4 ชั้นการป้องกันตาม OWASP Best Practices</p>
+            <div class="security-list">
+                <div class="security-item">
+                    <div class="security-icon">🔑</div>
+                    <div>
+                        <div class="security-title">JWT + Refresh Token Rotation</div>
+                        <div class="security-desc">Access token หมดอายุสั้น, Refresh token ถูก rotate ทุกครั้งที่ใช้ และ revoke list ป้องกันการใช้ token เก่า</div>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">🛡️</div>
+                    <div>
+                        <div class="security-title">CSRF Double Submit Cookie</div>
+                        <div class="security-desc">ทุก POST ต้องมี X-CSRF-TOKEN ที่ตรงกับ session cookie ป้องกัน Cross-Site Request Forgery อย่างสมบูรณ์</div>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">🚦</div>
+                    <div>
+                        <div class="security-title">Rate Limiting per IP</div>
+                        <div class="security-desc">จำกัดจำนวน request ต่อ IP ต่อนาที กำหนดค่าได้ใน config ป้องกัน brute force และ automated attacks</div>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">🌐</div>
+                    <div>
+                        <div class="security-title">CORS Origin Allowlist</div>
+                        <div class="security-desc">จำกัด origin ที่อนุญาตผ่าน api_cors config ป้องกัน unauthorized cross-origin requests</div>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">🔒</div>
+                    <div>
+                        <div class="security-title">IP Allowlist</div>
+                        <div class="security-desc">กำหนด api_ips ใน config เพื่อจำกัดว่า IP ใดสามารถเรียก API ได้ ใช้ 0.0.0.0 เพื่อเปิดทุก IP</div>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">💉</div>
+                    <div>
+                        <div class="security-title">SQL Injection Prevention</div>
+                        <div class="security-desc">Query Builder ใช้ Prepared Statement ทุกครั้ง ไม่มีการต่อ string SQL โดยตรง ปลอดภัยจาก SQL Injection</div>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">🔐</div>
+                    <div>
+                        <div class="security-title">Password Hashing</div>
+                        <div class="security-desc">รหัสผ่านถูก hash ด้วย bcrypt/Argon2 ผ่าน password_hash() ไม่มีการเก็บ plain text</div>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">📋</div>
+                    <div>
+                        <div class="security-title">Input Validation</div>
+                        <div class="security-desc">Validator class ตรวจสอบ input ทุกตัวก่อนประมวลผล คืน 422 พร้อม errors object เมื่อข้อมูลไม่ถูกต้อง</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ─── CREATE MODULE ─── -->
+    <section style="background:var(--gray-900);color:#f1f5f9">
+        <div class="section-inner">
+            <h2 class="section-title" style="color:#f8fafc">สร้าง Module ใหม่</h2>
+            <p class="section-sub" style="color:#94a3b8">เพิ่ม API Endpoint ใหม่ใน 2 ไฟล์</p>
+            <pre><code><span class="cmt"># โครงสร้างไฟล์สำหรับ module ใหม่</span>
+modules/
+└── <span class="var">mymodule</span>/
+    ├── controllers/
+    │   └── <span class="var">user</span>.php    <span class="cmt">← /api/mymodule/user/{action}</span>
+    └── models/
+        └── <span class="var">user</span>.php    <span class="cmt">← ตรรกะและ database queries</span>
+
+<span class="cmt">─────── modules/mymodule/controllers/user.php ───────</span>
+<span class="kw">namespace</span> <span class="fn">Mymodule\User</span>;
+
+<span class="kw">use</span> <span class="fn">Kotchasan\Http\Request</span>;
+
+<span class="kw">class</span> <span class="fn">Controller</span> <span class="kw">extends</span> \Kotchasan\ApiController
+{
+    <span class="kw">public function</span> <span class="fn">index</span>(Request <span class="var">$request</span>): <span class="kw">array</span>
+    {
+        <span class="var">$users</span> = \<span class="fn">Mymodule\User\Model</span>::<span class="fn">getAll</span>();
+        <span class="kw">return</span> [<span class="str">'success'</span> => <span class="kw">true</span>, <span class="str">'data'</span> => <span class="var">$users</span>];
+    }
+
+    <span class="kw">public function</span> <span class="fn">create</span>(Request <span class="var">$request</span>): <span class="kw">array</span>
+    {
+        <span class="cmt">// ตรวจสอบ JWT middleware ก่อน</span>
+        <span class="var">$data</span> = <span class="var">$request</span>-><span class="fn">getParsedBody</span>();
+        <span class="kw">return</span> \<span class="fn">Mymodule\User\Model</span>::<span class="fn">create</span>(<span class="var">$data</span>);
+    }
+}
+
+<span class="cmt">─────── modules/mymodule/models/user.php ────────────</span>
+<span class="kw">namespace</span> <span class="fn">Mymodule\User</span>;
+
+<span class="kw">use</span> <span class="fn">Kotchasan\Model</span>;
+
+<span class="kw">class</span> <span class="fn">Model</span> <span class="kw">extends</span> \Kotchasan\Model
+{
+    <span class="kw">public static function</span> <span class="fn">getAll</span>(): <span class="kw">array</span>
+    {
+        <span class="kw">return</span> \<span class="fn">Kotchasan\DB</span>::<span class="fn">table</span>(<span class="str">'user'</span>)-><span class="fn">get</span>();
+    }
+
+    <span class="kw">public static function</span> <span class="fn">create</span>(<span class="kw">array</span> <span class="var">$data</span>): <span class="kw">array</span>
+    {
+        \<span class="fn">Kotchasan\DB</span>::<span class="fn">table</span>(<span class="str">'user'</span>)-><span class="fn">insert</span>(<span class="var">$data</span>);
+        <span class="kw">return</span> [<span class="str">'success'</span> => <span class="kw">true</span>];
+    }
+}
+
+<span class="cmt">─────── เรียกใช้ ───────</span>
+<span class="ph">GET</span>  /api/mymodule/user/index   <span class="cmt">→ Controller::index()</span>
+<span class="ph">POST</span> /api/mymodule/user/create  <span class="cmt">→ Controller::create()</span></code></pre>
+        </div>
+    </section>
+    <!-- ─── FOOTER ─── -->
+    <footer>
+        <p style="margin-bottom:.5rem;font-size:1rem;font-weight:600;color:#f8fafc">Kotchasan API Framework</p>
+        <p>สร้างบน <a href="https://www.kotchasan.com/">Kotchasan PHP Framework</a> &nbsp;·&nbsp; <a href="https://docs.kotchasan.com/th/" target="_blank" rel="noopener">คู่มือ
+                (ไทย)</a> &nbsp;·&nbsp; <a href="https://docs.kotchasan.com/en/" target="_blank" rel="noopener">Docs (EN)</a> &nbsp;·&nbsp; <a href="openapi.yaml">OpenAPI Spec</a>
+        </p>
+        <p style="margin-top:.75rem;font-size:.8rem;color:#475569"> PHP 7.4+ &nbsp;·&nbsp; MySQL / PostgreSQL / MSSQL / SQLite &nbsp;·&nbsp; MIT License </p>
+    </footer>
+</body>
+
+</html>
